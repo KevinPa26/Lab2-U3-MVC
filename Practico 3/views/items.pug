@@ -1,0 +1,175 @@
+doctype html
+html(lang='es')
+    head
+        meta(charset='UTF-8')
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous")
+        style.
+            .resaltar {
+                color:red;
+            }
+        title asd
+    body
+        nav(class="navbar navbar-expand-sm bg-light justify-content-center")
+            ul(class="navbar-nav")
+                li(class="nav-item")
+                    a(class="nav-link" href="/") INDEX
+                li(class="nav-item")
+                    a(class="nav-link" href="/item") AGREGAR ITEM
+                li(class="nav-item")
+                    a(class="nav-link" href="/list") AGREGAR LISTA
+                li(class="nav-item")
+                    a(class="nav-link" href="/list/listas") VER LISTAS
+        .container
+            .row
+                table(class="table" id='conLista')
+                    thead(class="thead-light")
+                        tr
+                            th ID
+                            th LISTA
+                            th TITULO
+                            th DESCRIPION
+                            th PRIORIDAD
+                            th ESTADO
+                            th FECHA DE CREACION
+                            th FECHA LIMITE
+                            th FECHA DE MODIFICACION
+                            th FECHA DE RESOLUCION
+                    tbody
+                        each val in items
+                            tr
+                                td #{val.id}
+                                td #{nlista}
+                                td #{val.titulo}
+                                td #{val.descripcion}
+                                td #{val.prioridad}
+                                td #{val.estado}
+                                td #{val.createdAt}
+                                td #{val.fecha_limite}
+                                td #{val.updatedAt}
+                                td #{val.fecha_resolucion}
+                                td
+                                    button(type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal" onclick="llenarForm(this);") MODIFICAR
+            .row
+                h1 items sin lista
+
+                table(class="table" id='sinLista')
+                    thead(class="thead-light")
+                        tr
+                            th ID
+                            th LISTA
+                            th TITULO
+                            th DESCRIPION
+                            th PRIORIDAD
+                            th ESTADO
+                            th FECHA DE CREACION
+                            th FECHA LIMITE
+                            th FECHA DE MODIFICACION
+                            th FECHA DE RESOLUCION
+                    tbody
+                        each val in itemsNull
+                            tr
+                                td #{val.id}
+                                td a
+                                td #{val.titulo}
+                                td #{val.descripcion}
+                                td #{val.prioridad}
+                                td #{val.estado}
+                                td #{val.createdAt}
+                                td #{val.fecha_limite}
+                                td #{val.updatedAt}
+                                td #{val.fecha_resolucion}
+                                td
+                                    button(type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal" onclick="llenarForm(this);") MODIFICAR
+            .row
+                div(class="modal fade" id="myModal" role="dialog")
+                        div(class="modal-dialog")
+                            div(class="modal-content")
+                                div(class="modal-header")
+                                    button(type="button" class="close" data-dismiss="modal") &times;
+                                    h4(class="modal-title") Modificar
+                                div(class="modal-body")
+                                    include form.pug
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous")
+        script(src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
+        script.
+            function llenarForm(e){
+                let sel = document.getElementsByTagName('select');
+                const pa = e.parentNode.parentNode;
+                let myArr = pa.childNodes;
+                console.log(myArr[1].innerHTML);
+                document.getElementById('idItem').value = myArr[1].innerHTML;
+                if(myArr[11].innerHTML == 'Resuelto'){
+                    sel[0].setAttribute("disabled", true);
+                    sel[2].setAttribute("disabled", true);
+                }else{
+                    sel[0].removeAttribute("disabled", true);
+                    sel[2].removeAttribute("disabled", true);
+                }
+                if(myArr[3].innerHTML == 'a'){
+                    sel[0].value = '';
+                }else{
+                    sel[0].value = window.location.href.split('/')[4];
+                }
+                document.getElementById('titulo').value = myArr[5].innerHTML;
+                document.getElementById('descripcion').value = myArr[7].innerHTML;
+                document.getElementById('prioridad').value = myArr[9].innerHTML;
+                sel[2].value = myArr[11].innerHTML;
+                document.getElementById('fechaC').value = myArr[13].innerHTML;
+                document.getElementById('fechaL').value = myArr[15].innerHTML;
+            }
+        script.
+            $(document).ready(()=>{
+                $('#conLista th').each(function(columna) {
+                    $(this).hover(function() {
+                        $(this).addClass('resaltar');
+                    }, function() {
+                        $(this).removeClass('resaltar');
+                    });
+
+                    $(this).click(function() {
+                        let registros = $('#conLista').find('tbody > tr').get();
+
+                        registros.sort(function(a, b) {
+                            let valor1 = $(a).children('td').eq(columna).text();
+                            let valor2 = $(b).children('td').eq(columna).text();
+                            console.log(valor1);
+                            console.log(valor2);
+
+                            return valor1 < valor2 ? -1 : valor1 > valor2 ? 1 : 0;
+                        });
+
+                        $.each(registros, function(indice, elemento) {
+                            $('#conLista tbody').append(elemento);
+                        });
+                    });
+                });
+            });
+
+            $(document).ready(()=>{
+                $('#sinLista th').each(function(columna) {
+                    $(this).hover(function() {
+                        $(this).addClass('resaltar');
+                    }, function() {
+                        $(this).removeClass('resaltar');
+                    });
+
+                    $(this).click(function() {
+                        let registros = $('#sinLista').find('tbody > tr').get();
+
+                        registros.sort(function(a, b) {
+                            let valor1 = $(a).children('td').eq(columna).text().toUpperCase();
+                            let valor2 = $(b).children('td').eq(columna).text().toUpperCase();
+
+                            return valor1 < valor2 ? -1 : valor1 > valor2 ? 1 : 0;
+                        });
+
+                        $.each(registros, function(indice, elemento) {
+                            $('#sinLista tbody').append(elemento);
+                        });
+                    });
+                });
+            });
